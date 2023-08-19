@@ -2,26 +2,43 @@ package com.anupreet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @SpringBootApplication
 @RestController
+@RequestMapping("api/v1/customer")
 public class Main {
+
+    private final CustomerRepo customerRepo;
+
+    public Main(CustomerRepo customerRepo) {
+        this.customerRepo = customerRepo;
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
 
-    @GetMapping("/greet")
-    public GreetResponse greet() {
-        return new GreetResponse(
-                "Hello",
-                new Person("Sam"),
-                List.of("Java", "C++", "JavaScript"));
+    @GetMapping
+    public List<Customer> getCustomer() {
+        return customerRepo.findAll();
     }
 
-    record Person(String name) {}
-    record GreetResponse(String greet, Person person, List<String> myList) {}
+    record NewCustomerReq(
+            String name,
+            String email,
+            Integer age
+    ) {
+
+    }
+    @PostMapping
+    public void addCustomer(@RequestBody NewCustomerReq request){
+        Customer customer = new Customer();
+        customer.setName(request.name());
+        customer.setEmail(request.email());
+        customer.setAge(request.age());
+        customerRepo.save(customer);
+    }
 }
