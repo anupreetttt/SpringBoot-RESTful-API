@@ -41,4 +41,9 @@ public class Main {
         customer.setAge(request.age());
         customerRepo.save(customer);
     }
+
+    @DeleteMapping("{customerId}")
+    public void deleteCustomer(@PathVariable("customerId") Integer id) {
+        customerRepo.deleteById(id);
+    }
 }
